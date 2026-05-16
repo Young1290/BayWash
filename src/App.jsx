@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LANGUAGES, messages, slotKeys } from "./i18n";
 import { BRAND_COMPANY_NAME, BRAND_WHATSAPP } from "./brand";
 import { submitBooking } from "./lib/api";
+import { isFutureOrToday, isWeekday, todayDateInputValue } from "./lib/date";
 import { normalizeMyPhoneToE164 } from "./lib/phone";
 import {
   buildShareLink,
@@ -36,30 +37,6 @@ const ADDRESS_OPTIONS = [
   { value: "Subang Jaya", labelKey: "addressOptionSubangJaya" },
   { value: "__other__", labelKey: "addressOptionOther" },
 ];
-
-function todayDateInputValue() {
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function isFutureOrToday(yyyyMmDd) {
-  if (!yyyyMmDd) return false;
-  const today = todayDateInputValue();
-  return yyyyMmDd >= today;
-}
-
-function isWeekday(yyyyMmDd) {
-  if (!yyyyMmDd) return false;
-  const [y, m, d] = String(yyyyMmDd).split("-").map((part) => Number(part));
-  if (!y || !m || !d) return false;
-  const parsed = new Date(y, m - 1, d);
-  if (Number.isNaN(parsed.getTime())) return false;
-  const day = parsed.getDay();
-  return day >= 1 && day <= 5;
-}
 
 function withVars(template, vars) {
   return String(template || "").replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
@@ -313,8 +290,6 @@ export default function App() {
 
   return (
     <main className="page-shell">
-      <div className="blob blob-a" />
-      <div className="blob blob-b" />
       <section className="card">
         <header className="hero">
           <div className="brand-row">

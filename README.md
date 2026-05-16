@@ -19,6 +19,11 @@ Single-page doorstep car wash booking app with:
    ```bash
    npm run dev
    ```
+4. Run validation checks:
+   ```bash
+   npm test
+   npm run build
+   ```
 
 ## Supabase setup
 
@@ -82,3 +87,16 @@ Unprefixed ambiguous digits (for example `123456789`) are rejected.
 Trust module text includes placeholders to replace for production:
 - company name
 - WhatsApp customer service number
+
+## Go-live checklist
+
+1. Set production env vars in deploy platform:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_COMPANY_NAME`
+   - `VITE_SUPPORT_WHATSAPP`
+2. Run latest [supabase/schema.sql](supabase/schema.sql) on production Supabase.
+3. Smoke test booking flow:
+   - normal booking creates one `bookings` row
+   - referral link booking creates one `referrals` row (when valid)
+4. Confirm multilingual UI renders correctly (`English / 中文 / Bahasa Melayu`).
