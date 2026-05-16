@@ -4,6 +4,7 @@ import { BRAND_COMPANY_NAME, BRAND_WHATSAPP } from "./brand";
 import { submitBooking } from "./lib/api";
 import { todayDateInputValue } from "./lib/date";
 import { validateBookingForm } from "./lib/bookingValidation";
+import { isSupabaseConfigured } from "./lib/supabase";
 import {
   buildShareLink,
   clearSavedReferrerCode,
@@ -57,6 +58,9 @@ function buildSubmitErrorMessage(error, tError) {
   }
   if (normalized.includes("submit_booking_mvp")) {
     return tError("missingBackendFunction");
+  }
+  if (normalized.includes("supabase client is not configured") || normalized.includes("not configured")) {
+    return tError("missingClientConfig");
   }
   if (
     normalized.includes("jwt") ||
@@ -149,6 +153,10 @@ export default function App() {
   async function onSubmit(event) {
     event.preventDefault();
     if (submitting) return;
+    if (!isSupabaseConfigured) {
+      setSubmitError(tError("missingClientConfig"));
+      return;
+    }
 
     const result = validateBookingForm(form, tError, todayDateInputValue());
     setErrors(result.errors);
@@ -467,8 +475,9 @@ export default function App() {
             </section>
 
             {submitError && <p className="submit-error">{submitError}</p>}
+            {!isSupabaseConfigured && <p className="submit-error">{tError("missingClientConfig")}</p>}
             {actionFeedback && <p className="submit-error">{actionFeedback}</p>}
-            <button className="submit-btn" type="submit" disabled={submitting}>
+            <button className="submit-btn" type="submit" disabled={submitting || !isSupabaseConfigured}>
               {submitting ? t("submitting") : t("submit")}
             </button>
           </form>
