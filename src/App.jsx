@@ -2,8 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { LANGUAGES, messages, slotKeys } from "./i18n";
 import { BRAND_COMPANY_NAME, BRAND_WHATSAPP } from "./brand";
 import { submitBooking } from "./lib/api";
-import { isFutureOrToday, isWeekday, todayDateInputValue } from "./lib/date";
-import { normalizeMyPhoneToE164 } from "./lib/phone";
+import { todayDateInputValue } from "./lib/date";
+import { validateBookingForm } from "./lib/bookingValidation";
 import {
   buildShareLink,
   clearSavedReferrerCode,
@@ -146,54 +146,11 @@ export default function App() {
     setErrors((prev) => ({ ...prev, [field]: "" }));
   }
 
-  function validate(nextForm) {
-    const nextErrors = {};
-    const requiredFields = [
-      "name",
-      "phone",
-      "address",
-      "carparkFloor",
-      "carparkLot",
-      "planType",
-      "carAvailableDate",
-      "carAvailableSlot",
-    ];
-
-    requiredFields.forEach((field) => {
-      if (!String(nextForm[field] || "").trim()) {
-        nextErrors[field] = tError("required");
-      }
-    });
-    if (nextForm.address === "__other__" && !String(nextForm.addressOther || "").trim()) {
-      nextErrors.addressOther = tError("required");
-    }
-
-    let normalizedPhone = null;
-    if (String(nextForm.phone || "").trim()) {
-      normalizedPhone = normalizeMyPhoneToE164(nextForm.phone);
-    }
-    if (!nextErrors.phone && !normalizedPhone) {
-      nextErrors.phone = tError("invalidPhone");
-    }
-
-    if (nextForm.carAvailableDate && !isFutureOrToday(nextForm.carAvailableDate)) {
-      nextErrors.carAvailableDate = tError("invalidDate");
-    } else if (nextForm.carAvailableDate && !isWeekday(nextForm.carAvailableDate)) {
-      nextErrors.carAvailableDate = tError("invalidWeekday");
-    }
-
-    return {
-      errors: nextErrors,
-      normalizedPhone,
-      isValid: Object.keys(nextErrors).length === 0,
-    };
-  }
-
   async function onSubmit(event) {
     event.preventDefault();
     if (submitting) return;
 
-    const result = validate(form);
+    const result = validateBookingForm(form, tError, todayDateInputValue());
     setErrors(result.errors);
     if (!result.isValid || !result.normalizedPhone) return;
 
