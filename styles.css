@@ -1,0 +1,249 @@
+/* BayWash design tokens & primitives — refined for clarity & calm */
+:root {
+  --bw-bg: #FBFAF7;
+  --bw-surface: #FFFFFF;
+  --bw-surface-2: #F6F4EF;
+  --bw-ink: #11160F;
+  --bw-ink-2: #303530;
+  --bw-muted: #767E78;
+  --bw-muted-2: #A8AEA9;
+  --bw-line: #EDEAE2;
+  --bw-line-soft: #F4F1EA;
+
+  --bw-primary: #0E7A47;
+  --bw-primary-ink: #06502D;
+  --bw-primary-soft: #E8F2EC;
+  --bw-accent: #F2C94C;
+  --bw-danger: #C0382B;
+
+  --bw-radius-sm: 10px;
+  --bw-radius: 14px;
+  --bw-radius-md: 18px;
+  --bw-radius-lg: 22px;
+
+  --bw-shadow-sm: 0 1px 2px rgba(14,20,16,0.03);
+  --bw-shadow: 0 4px 14px rgba(14,20,16,0.05);
+  --bw-shadow-lg: 0 16px 40px rgba(14,20,16,0.08);
+
+  --bw-font: 'Geist', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --bw-font-display: 'Instrument Serif', 'Times New Roman', serif;
+  --bw-font-mono: 'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+}
+
+/* Theme: alt palette (set on .theme-* on the screen wrapper) */
+.theme-ink {
+  --bw-bg: #0E1410;
+  --bw-surface: #161D18;
+  --bw-surface-2: #1B2520;
+  --bw-ink: #F4F2EC;
+  --bw-ink-2: #D6D4CC;
+  --bw-muted: #9AA29D;
+  --bw-muted-2: #6B7570;
+  --bw-line: #2A322C;
+  --bw-line-soft: #1F2722;
+  --bw-primary: #62D29C;
+  --bw-primary-ink: #C8EBD6;
+  --bw-primary-soft: #1C2A22;
+}
+.theme-blue {
+  --bw-primary: #1F4FFF;
+  --bw-primary-ink: #0A2A99;
+  --bw-primary-soft: #E6ECFF;
+}
+.theme-orange {
+  --bw-primary: #E25A1C;
+  --bw-primary-ink: #8A2F0A;
+  --bw-primary-soft: #FCE9DD;
+}
+.theme-mono {
+  --bw-primary: #0E1410;
+  --bw-primary-ink: #000;
+  --bw-primary-soft: #EFEDE6;
+}
+
+/* Font pair toggle */
+.font-geist  { --bw-font: 'Geist', system-ui, sans-serif; --bw-font-display: 'Instrument Serif', serif; }
+.font-grotesk{ --bw-font: 'Space Grotesk', system-ui, sans-serif; --bw-font-display: 'Space Grotesk', sans-serif; }
+.font-mono   { --bw-font: 'Geist Mono', ui-monospace, monospace; --bw-font-display: 'Geist Mono', monospace; }
+
+/* Screen frame — used inside each artboard */
+.bw-screen {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: var(--bw-bg);
+  color: var(--bw-ink);
+  font-family: var(--bw-font);
+  font-feature-settings: 'ss01','cv11';
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+.bw-screen *::-webkit-scrollbar { display: none; }
+.bw-screen *, .bw-screen *::before, .bw-screen *::after { box-sizing: border-box; }
+
+.bw-stack { display: flex; flex-direction: column; }
+.bw-row   { display: flex; align-items: center; }
+
+/* status bar (lightweight, used inside screens that aren't device-framed) */
+.bw-statusbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 24px 6px; font-size: 14px; font-weight: 600; color: var(--bw-ink);
+}
+
+/* Page padding */
+.bw-page { padding: 8px 22px 24px; }
+
+/* Top bar */
+.bw-topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 22px 14px;
+}
+.bw-topbar h1 {
+  margin: 0; font-size: 22px; font-weight: 600; letter-spacing: -0.02em;
+  font-family: var(--bw-font);
+}
+.bw-iconbtn {
+  width: 40px; height: 40px; border-radius: 12px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bw-surface); border: 1px solid var(--bw-line);
+  color: var(--bw-ink);
+  transition: background 0.12s, border-color 0.12s;
+}
+.bw-iconbtn:hover { background: var(--bw-surface-2); border-color: var(--bw-muted-2); }
+
+/* Card */
+.bw-card {
+  background: var(--bw-surface);
+  border: 1px solid var(--bw-line);
+  border-radius: var(--bw-radius);
+  box-shadow: var(--bw-shadow-sm);
+}
+.bw-card.lg { border-radius: var(--bw-radius-md); }
+.bw-card.flat { box-shadow: none; }
+
+/* Buttons */
+.bw-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 54px; padding: 0 20px; border-radius: 14px;
+  font-family: var(--bw-font); font-size: 16px; font-weight: 600;
+  letter-spacing: -0.01em; cursor: pointer; border: none;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+.bw-btn.primary { background: var(--bw-primary); color: #fff; box-shadow: 0 6px 18px rgba(14,122,71,0.22); }
+.bw-btn.primary:hover { transform: translateY(-1px); box-shadow: 0 10px 24px rgba(14,122,71,0.28); }
+.bw-btn.ghost   { background: transparent; color: var(--bw-ink); }
+.bw-btn.outline { background: var(--bw-surface); color: var(--bw-ink); border: 1px solid var(--bw-line); }
+.bw-btn.block   { width: 100%; }
+.bw-btn.lg      { height: 58px; font-size: 17px; }
+
+/* Form inputs */
+.bw-field { display: flex; flex-direction: column; gap: 8px; }
+.bw-label { font-size: 13px; font-weight: 500; color: var(--bw-muted); letter-spacing: 0.01em; }
+.bw-input,
+.bw-select {
+  width: 100%; height: 54px; padding: 0 16px;
+  border-radius: 14px; border: 1px solid var(--bw-line);
+  background: var(--bw-surface); color: var(--bw-ink);
+  font-family: var(--bw-font); font-size: 16px; font-weight: 500;
+  letter-spacing: -0.005em;
+  display: flex; align-items: center;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.bw-input::placeholder { color: var(--bw-muted-2); font-weight: 400; }
+.bw-input.focused { border-color: var(--bw-primary); box-shadow: 0 0 0 4px var(--bw-primary-soft); }
+
+.bw-select {
+  display: flex; justify-content: space-between; align-items: center;
+  cursor: pointer;
+}
+.bw-select .placeholder { color: var(--bw-muted-2); font-weight: 400; }
+
+/* Helper text */
+.bw-help { font-size: 12px; color: var(--bw-muted); letter-spacing: 0; }
+
+/* Divider */
+.bw-hr { height: 1px; background: var(--bw-line-soft); border: none; margin: 0; }
+
+/* Pill / chip */
+.bw-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 600;
+  background: var(--bw-primary-soft); color: var(--bw-primary-ink);
+}
+.bw-chip.muted { background: var(--bw-line-soft); color: var(--bw-muted); }
+.bw-chip.live  { background: var(--bw-primary); color: #fff; }
+.bw-chip.live::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: #fff; animation: bw-pulse 1.4s ease-in-out infinite;
+}
+@keyframes bw-pulse { 0%,100% { opacity: 1 } 50% { opacity: 0.4 } }
+
+/* Logo glyph */
+.bw-logo {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--bw-font-display);
+  font-size: 26px; letter-spacing: -0.02em; color: var(--bw-ink);
+  font-weight: 400; font-style: italic;
+}
+.bw-logo .mark {
+  width: 32px; height: 32px; border-radius: 9px;
+  background: var(--bw-primary); color: #fff;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-style: normal; font-family: var(--bw-font);
+  font-weight: 600; font-size: 16px; letter-spacing: -0.02em;
+}
+
+/* Page title block */
+.bw-h1 {
+  font-family: var(--bw-font-display);
+  font-size: 32px; line-height: 1.05; letter-spacing: -0.02em;
+  font-weight: 400; color: var(--bw-ink);
+  margin: 0;
+}
+.bw-h1 em { font-style: italic; color: var(--bw-primary); }
+.bw-h2 {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--bw-muted-2);
+  margin: 0 0 12px;
+}
+
+/* Toggle switch */
+.bw-switch {
+  width: 46px; height: 28px; border-radius: 999px;
+  background: var(--bw-line); position: relative; cursor: pointer;
+  transition: background 0.18s ease;
+}
+.bw-switch.on { background: var(--bw-primary); }
+.bw-switch::after {
+  content: ''; position: absolute; top: 3px; left: 3px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: transform 0.18s ease;
+}
+.bw-switch.on::after { transform: translateX(18px); }
+
+/* Step pip */
+.bw-steps { display: flex; gap: 6px; align-items: center; }
+.bw-pip {
+  height: 4px; border-radius: 2px; background: var(--bw-line);
+  flex: 1; transition: background 0.2s;
+}
+.bw-pip.done { background: var(--bw-primary); }
+.bw-pip.active { background: var(--bw-ink); }
+
+/* Tab pill row (for monthly pass etc.) */
+.bw-segment {
+  display: inline-flex; padding: 4px; gap: 2px;
+  background: var(--bw-line-soft); border-radius: 10px;
+}
+.bw-segment button {
+  border: none; background: transparent; padding: 8px 14px;
+  font-family: var(--bw-font); font-size: 13px; font-weight: 600;
+  color: var(--bw-muted); border-radius: 8px; cursor: pointer;
+}
+.bw-segment button.active {
+  background: var(--bw-surface); color: var(--bw-ink);
+  box-shadow: var(--bw-shadow-sm);
+}
+</content>
+</invoke>
