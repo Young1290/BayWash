@@ -24,7 +24,11 @@ Single-page doorstep car wash booking app with:
    npm test
    npm run build
    ```
-5. Optional live RPC smoke test (uses current `.env.local`):
+5. Validate environment and DNS first:
+   ```bash
+   npm run check:env
+   ```
+6. Optional live RPC smoke test (uses current `.env.local`):
    ```bash
    npm run smoke:rpc
    ```
@@ -117,3 +121,11 @@ Trust module text includes placeholders to replace for production:
    - `VITE_COMPANY_NAME`
    - `VITE_SUPPORT_WHATSAPP`
 6. Deploy and run smoke test with a real booking.
+
+## Troubleshooting
+
+- `npm run check:env` reports `Supabase host cannot be resolved`:
+  - verify project URL from Supabase dashboard (`Settings -> API -> Project URL`)
+  - update `VITE_SUPABASE_URL` in `.env.local` and deploy platform env
+- `npm run smoke:rpc` fails with `submit_booking_mvp_v2` missing:
+  - run latest [supabase/schema.sql](supabase/schema.sql) in SQL editor

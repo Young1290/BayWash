@@ -8,6 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "test": "node --test",
+    "check:env": "node scripts/check-env.mjs",
     "smoke:rpc": "node scripts/smoke-rpc.mjs"
   },
   "dependencies": {
