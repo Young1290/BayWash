@@ -24,6 +24,10 @@ Single-page doorstep car wash booking app with:
    npm test
    npm run build
    ```
+5. Optional live RPC smoke test (uses current `.env.local`):
+   ```bash
+   npm run smoke:rpc
+   ```
 
 ## Supabase setup
 
