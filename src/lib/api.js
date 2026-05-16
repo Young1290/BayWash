@@ -1,4 +1,4 @@
-import { supabase } from "./supabase";
+import { supabase } from "./supabase.js";
 
 export async function submitBooking(payload) {
   const { data, error } = await supabase.rpc("submit_booking_mvp_v2", {
