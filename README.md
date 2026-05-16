@@ -2,7 +2,7 @@
 
 Single-page doorstep car wash booking app with:
 - simple booking form
-- `English / 中文 / Bahasa Melayu` language switch (persisted locally)
+- `English / Chinese / Bahasa Melayu` language switch (persisted locally)
 - referral capture from `?ref=CODE` links
 - referral sharing after booking
 
@@ -45,7 +45,7 @@ Single-page doorstep car wash booking app with:
   - if it mismatches the owner of `referrer_code`, DB ignores the mismatch and uses code owner as source of truth.
   - if there is no valid `referrer_code`, no referral attribution is created.
 
-## Security & integrity notes
+## Security and integrity notes
 
 - Anonymous direct table writes are blocked by RLS policy design (no `anon` insert policies on `users`, `bookings`, `referrals`).
 - Anonymous booking intake is allowed through `submit_booking_mvp_v2` (`SECURITY DEFINER`) only.
@@ -99,4 +99,17 @@ Trust module text includes placeholders to replace for production:
 3. Smoke test booking flow:
    - normal booking creates one `bookings` row
    - referral link booking creates one `referrals` row (when valid)
-4. Confirm multilingual UI renders correctly (`English / 中文 / Bahasa Melayu`).
+4. Confirm multilingual UI renders correctly (`English / Chinese / Bahasa Melayu`).
+
+## Vercel deployment
+
+1. Import this GitHub repo into Vercel.
+2. Framework preset: `Vite`.
+3. Build command: `npm run build`.
+4. Output directory: `dist`.
+5. Add environment variables:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_COMPANY_NAME`
+   - `VITE_SUPPORT_WHATSAPP`
+6. Deploy and run smoke test with a real booking.
