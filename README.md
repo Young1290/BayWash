@@ -32,6 +32,10 @@ Single-page doorstep car wash booking app with:
    ```bash
    npm run smoke:rpc
    ```
+7. Run full go-live audit (all gates in sequence):
+   ```bash
+   npm run audit:release
+   ```
 
 ## Supabase setup
 
