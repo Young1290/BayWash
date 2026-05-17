@@ -40,6 +40,14 @@ const ADDRESS_OPTIONS = [
   { value: "__other__", labelKey: "addressOptionOther" },
 ];
 
+function buildWhatsAppHref(rawPhone) {
+  const digits = String(rawPhone || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("60")) return `https://wa.me/${digits}`;
+  if (digits.startsWith("0")) return `https://wa.me/60${digits.slice(1)}`;
+  return `https://wa.me/${digits}`;
+}
+
 function withVars(template, vars) {
   return String(template || "").replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
 }
@@ -69,6 +77,7 @@ export default function App() {
 
   const text = useMemo(() => messages[lang], [lang]);
   const configError = !isSupabaseConfigured ? tError("missingClientConfig") : "";
+  const supportHref = buildWhatsAppHref(BRAND_WHATSAPP);
 
   useEffect(() => {
     const refFromUrl = readReferrerFromUrl();
@@ -99,6 +108,9 @@ export default function App() {
 
   function t(key) {
     return text[key];
+  }
+  function tx(key, fallback = "") {
+    return text[key] ?? messages.en[key] ?? fallback;
   }
 
   function tt(key) {
@@ -219,6 +231,12 @@ export default function App() {
     const slot = slotKeys.find((item) => item.value === submitted?.booking?.car_available_slot);
     return slot ? t(slot.key) : submitted?.booking?.car_available_slot || "-";
   })();
+  const selectedSlotLabel = (() => {
+    const slot = slotKeys.find((item) => item.value === form.carAvailableSlot);
+    return slot ? t(slot.key) : tx("quickSummaryNotSelected", "-");
+  })();
+  const selectedDateLabel = form.carAvailableDate || tx("quickSummaryNotSelected", "-");
+  const selectedPlanLabel = form.planType === "monthly" ? t("planMonthly") : t("planSingle");
 
   return (
     <main className="page-shell">
@@ -247,6 +265,15 @@ export default function App() {
 
           <h1>{t("heroTitle")}</h1>
           <p className="hero-sub">{t("heroSub")}</p>
+          {supportHref ? (
+            <a className="support-link" href={supportHref} target="_blank" rel="noreferrer">
+              {tx("helpCta", "Need help on WhatsApp?")}
+            </a>
+          ) : (
+            <button type="button" className="support-link support-link--disabled" disabled>
+              {tx("helpCtaDisabled", "WhatsApp support unavailable")}
+            </button>
+          )}
           {savedReferrerCode && (
             <p className="ref-chip">
               <span>{t("referralApplied")}: {savedReferrerCode}</span>
@@ -439,6 +466,19 @@ export default function App() {
               <p>{t("trustResponse")}</p>
               <p>{t("trustPrivacy")}</p>
               <p className="price-hint">{t("priceHint")}</p>
+            </section>
+
+            <section className="quick-panel" aria-label={tx("quickSummaryTitle", "Booking preview")}>
+              <p className="quick-panel-title">{tx("quickSummaryTitle", "Booking preview")}</p>
+              <p>
+                <strong>{tx("quickSummaryPlan", "Plan")}:</strong> {selectedPlanLabel}
+              </p>
+              <p>
+                <strong>{tx("quickSummaryDate", "Date")}:</strong> {selectedDateLabel}
+              </p>
+              <p>
+                <strong>{tx("quickSummarySlot", "Time slot")}:</strong> {selectedSlotLabel}
+              </p>
             </section>
 
             {submitError && <p className="submit-error">{submitError}</p>}

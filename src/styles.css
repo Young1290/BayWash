@@ -61,6 +61,26 @@ body {
   line-height: 1.52;
 }
 
+.support-link {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  border-radius: 12px;
+  border: 1px solid #b7ddcc;
+  background: #effbf5;
+  color: #0b6d49;
+  font-weight: 800;
+  text-decoration: none;
+  padding: 0 12px;
+}
+
+.support-link--disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 .brand-row {
   display: flex;
   justify-content: space-between;
@@ -207,6 +227,28 @@ select:focus {
   color: #1f6b50 !important;
 }
 
+.quick-panel {
+  border: 1px solid var(--line);
+  background: #f9fcfb;
+  border-radius: 12px;
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+
+.quick-panel-title {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--primary-ink);
+  font-weight: 800;
+}
+
+.quick-panel p {
+  margin: 0;
+  color: #31524a;
+  font-size: 0.84rem;
+}
+
 .split-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -350,6 +392,7 @@ select:focus {
 .ghost-btn:focus-visible,
 .plan-btn:focus-visible,
 .ref-clear-btn:focus-visible,
+.support-link:focus-visible,
 select:focus-visible,
 input:focus-visible {
   outline: 3px solid rgba(15, 147, 98, 0.35);

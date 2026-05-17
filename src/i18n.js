@@ -50,6 +50,13 @@ export const messages = {
     trustPrivacy:
       "Your details are used only for booking and service follow-up, never sold or shared for ads.",
     priceHint: "Final quote is confirmed after review. No forced checkout.",
+    helpCta: "Need help on WhatsApp?",
+    helpCtaDisabled: "WhatsApp support unavailable",
+    quickSummaryTitle: "Booking preview",
+    quickSummaryPlan: "Plan",
+    quickSummaryDate: "Date",
+    quickSummarySlot: "Time slot",
+    quickSummaryNotSelected: "Not selected",
     submit: "Book Now",
     submitting: "Submitting...",
     successTitle: "Booked. See you soon.",
