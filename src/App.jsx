@@ -70,6 +70,68 @@ function getInitialLang() {
   }
 }
 
+function Icon({ name }) {
+  if (name === "spark") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 2l1.8 5.2L19 9l-5.2 1.8L12 16l-1.8-5.2L5 9l5.2-1.8L12 2z" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (name === "clock") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+        <path d="M12 7v5l3 2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    );
+  }
+  if (name === "shield") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 3l7 3v6c0 4.2-2.8 7.6-7 9-4.2-1.4-7-4.8-7-9V6l7-3z" fill="none" stroke="currentColor" strokeWidth="2" />
+      </svg>
+    );
+  }
+  if (name === "chat") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 5h16v10H9l-5 4V5z" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      </svg>
+    );
+  }
+  if (name === "location") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M12 21s6-5.5 6-10a6 6 0 1 0-12 0c0 4.5 6 10 6 10z" fill="none" stroke="currentColor" strokeWidth="2" />
+        <circle cx="12" cy="11" r="2.3" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (name === "car") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M5 13l1.5-4h11L19 13v4h-2v-1H7v1H5v-4z" fill="none" stroke="currentColor" strokeWidth="2" />
+        <circle cx="8" cy="14.5" r="1.5" fill="currentColor" />
+        <circle cx="16" cy="14.5" r="1.5" fill="currentColor" />
+      </svg>
+    );
+  }
+  if (name === "camera") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 8h4l1.2-2h5.6L16 8h4v10H4V8z" fill="none" stroke="currentColor" strokeWidth="2" />
+        <circle cx="12" cy="13" r="3" fill="none" stroke="currentColor" strokeWidth="2" />
+      </svg>
+    );
+  }
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="8" fill="currentColor" />
+    </svg>
+  );
+}
+
 export default function App() {
   const [lang, setLang] = useState(getInitialLang);
   const [designerPreset, setDesignerPreset] = useState(() => {
@@ -360,6 +422,11 @@ export default function App() {
   })();
   const selectedDateLabel = form.carAvailableDate || tx("quickSummaryNotSelected", "-");
   const selectedPlanLabel = form.planType === "monthly" ? t("planMonthly") : t("planSingle");
+  const highlights = [
+    { icon: "clock", text: t("trustHours") },
+    { icon: "shield", text: t("trustPrivacy") },
+    { icon: "chat", text: t("trustResponse") },
+  ];
 
   return (
     <main className={`page-shell designer-${designerPreset}`}>
@@ -367,7 +434,9 @@ export default function App() {
         <header className="hero">
           <div className="brand-row">
             <div className="brand">
-              <span className="brand-mark">B</span>
+              <span className="brand-mark" aria-hidden="true">
+                <Icon name="spark" />
+              </span>
               <div>
                 <p className="brand-name">{t("appName")}</p>
                 <p className="brand-tag">{t("tagline")}</p>
@@ -384,6 +453,17 @@ export default function App() {
                 ))}
               </select>
             </label>
+          </div>
+
+          <div className="highlight-grid" aria-label={tx("whyUs", "Service highlights")}>
+            {highlights.map((item) => (
+              <div key={item.text} className="highlight-item">
+                <span className="icon-dot" aria-hidden="true">
+                  <Icon name={item.icon} />
+                </span>
+                <span>{item.text}</span>
+              </div>
+            ))}
           </div>
 
           <h1>{step === "login" ? tx("loginHeroTitle", "Sign in before booking") : t("heroTitle")}</h1>
@@ -493,7 +573,12 @@ export default function App() {
             </section>
 
             <section className="form-section">
-              <p className="section-title">{tx("sectionContact", "Contact")}</p>
+              <p className="section-title">
+                <span className="section-icon" aria-hidden="true">
+                  <Icon name="chat" />
+                </span>
+                {tx("sectionContact", "Contact")}
+              </p>
               <Field
                 id="name"
                 label={t("nameLabel")}
@@ -548,7 +633,12 @@ export default function App() {
             </section>
 
             <section className="form-section">
-              <p className="section-title">{tx("sectionLocation", "Location")}</p>
+              <p className="section-title">
+                <span className="section-icon" aria-hidden="true">
+                  <Icon name="location" />
+                </span>
+                {tx("sectionLocation", "Location")}
+              </p>
               <Field
                 id="address"
                 label={t("addressLabel")}
@@ -625,7 +715,12 @@ export default function App() {
             </section>
 
             <section className="form-section">
-              <p className="section-title">{tx("sectionService", "Service")}</p>
+              <p className="section-title">
+                <span className="section-icon" aria-hidden="true">
+                  <Icon name="car" />
+                </span>
+                {tx("sectionService", "Service")}
+              </p>
               <Field
                 label={t("planLabel")}
                 error={errors.planType}
@@ -691,7 +786,12 @@ export default function App() {
             </section>
 
             <section className="form-section">
-              <p className="section-title">{tx("sectionMedia", "Photos")}</p>
+              <p className="section-title">
+                <span className="section-icon" aria-hidden="true">
+                  <Icon name="camera" />
+                </span>
+                {tx("sectionMedia", "Photos")}
+              </p>
               <div className="media-grid">
                 <div className="media-card">
                   <p className="media-title">{tx("carPhotoLabel", "Car photo (take picture)")}</p>
@@ -740,7 +840,12 @@ export default function App() {
             </section>
 
             <section className="quick-panel" aria-label={tx("quickSummaryTitle", "Booking preview")}>
-              <p className="quick-panel-title">{tx("quickSummaryTitle", "Booking preview")}</p>
+              <p className="quick-panel-title">
+                <span className="section-icon" aria-hidden="true">
+                  <Icon name="spark" />
+                </span>
+                {tx("quickSummaryTitle", "Booking preview")}
+              </p>
               <p>
                 <strong>{tx("quickSummaryPlate", "Plate")}:</strong> {form.carPlate || tx("quickSummaryNotSelected", "-")}
               </p>
