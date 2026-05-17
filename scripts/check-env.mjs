@@ -44,43 +44,68 @@ async function run() {
     "VITE_SUPPORT_WHATSAPP",
   ];
 
-  const missing = requiredKeys.filter((key) => !checkNonEmpty(env, key));
-  if (missing.length > 0) {
-    throw new Error(`Missing keys in .env.local: ${missing.join(", ")}`);
-  }
-  const placeholderKeys = requiredKeys.filter((key) => isPlaceholder(env[key]));
-  if (placeholderKeys.length > 0) {
-    throw new Error(`Placeholder values detected in .env.local: ${placeholderKeys.join(", ")}`);
+  const checks = [];
+  const addCheck = (ok, key, detail) => checks.push({ ok, key, detail });
+
+  for (const key of requiredKeys) {
+    if (!checkNonEmpty(env, key)) {
+      addCheck(false, key, "missing");
+    } else if (isPlaceholder(env[key])) {
+      addCheck(false, key, "placeholder");
+    } else {
+      addCheck(true, key, "ok");
+    }
   }
 
   let host = "";
   try {
     host = new URL(env.VITE_SUPABASE_URL).host;
   } catch {
-    throw new Error("VITE_SUPABASE_URL is not a valid URL");
+    addCheck(false, "VITE_SUPABASE_URL", "invalid URL format");
+    host = "";
   }
 
-  try {
-    const addresses = await dns.lookup(host, { all: true });
-    if (!addresses || addresses.length === 0) {
-      throw new Error("resolved empty DNS result");
+  if (host) {
+    try {
+      const addresses = await dns.lookup(host, { all: true });
+      if (!addresses || addresses.length === 0) {
+        throw new Error("resolved empty DNS result");
+      }
+      addCheck(true, "VITE_SUPABASE_URL", `dns ok (${host})`);
+    } catch (error) {
+      addCheck(false, "VITE_SUPABASE_URL", `dns failed (${host}) (${error.code || error.message})`);
     }
-  } catch (error) {
-    throw new Error(
-      `Supabase host cannot be resolved: ${host} (${error.code || error.message})`
-    );
   }
 
-  console.log(
-    JSON.stringify(
-      {
-        ok: true,
-        supabase_host: host,
-      },
-      null,
-      2
-    )
-  );
+  console.log("Environment validation checks:");
+  for (const item of checks) {
+    console.log(`- ${item.ok ? "PASS" : "FAIL"} | ${item.key} | ${item.detail}`);
+  }
+
+  const failed = checks.filter((item) => !item.ok);
+  if (failed.length > 0) {
+    console.log("\nSuggested fixes:");
+    if (failed.some((x) => x.key === "VITE_SUPABASE_URL")) {
+      console.log(
+        "- Copy Project URL from Supabase Dashboard -> Settings -> API and set VITE_SUPABASE_URL."
+      );
+    }
+    if (failed.some((x) => x.key === "VITE_SUPABASE_ANON_KEY")) {
+      console.log(
+        "- Copy anon/public key from Supabase Dashboard -> Settings -> API and set VITE_SUPABASE_ANON_KEY."
+      );
+    }
+    if (failed.some((x) => x.key === "VITE_COMPANY_NAME")) {
+      console.log("- Set VITE_COMPANY_NAME to your real operating entity name.");
+    }
+    if (failed.some((x) => x.key === "VITE_SUPPORT_WHATSAPP")) {
+      console.log("- Set VITE_SUPPORT_WHATSAPP to your real support WhatsApp number.");
+    }
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log("\nAll environment checks passed.");
 }
 
 run().catch((error) => {
