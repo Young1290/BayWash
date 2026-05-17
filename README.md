@@ -14,7 +14,7 @@ Single-page doorstep car wash booking app with:
    ```
 2. Create `.env` from `.env.example` and fill:
    - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLIC_KEY`)
 3. Run app:
    ```bash
    npm run dev
@@ -104,7 +104,7 @@ Trust module text includes placeholders to replace for production:
 
 1. Set production env vars in deploy platform:
    - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLIC_KEY`)
    - `VITE_COMPANY_NAME`
    - `VITE_SUPPORT_WHATSAPP`
 2. Run latest [supabase/schema.sql](supabase/schema.sql) on production Supabase.

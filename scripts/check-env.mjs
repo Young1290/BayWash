@@ -37,12 +37,7 @@ async function run() {
   }
 
   const env = readEnv(envPath);
-  const requiredKeys = [
-    "VITE_SUPABASE_URL",
-    "VITE_SUPABASE_ANON_KEY",
-    "VITE_COMPANY_NAME",
-    "VITE_SUPPORT_WHATSAPP",
-  ];
+  const requiredKeys = ["VITE_SUPABASE_URL", "VITE_COMPANY_NAME", "VITE_SUPPORT_WHATSAPP"];
 
   const checks = [];
   const addCheck = (ok, key, detail) => checks.push({ ok, key, detail });
@@ -55,6 +50,16 @@ async function run() {
     } else {
       addCheck(true, key, "ok");
     }
+  }
+
+  const resolvedAnonKey = env.VITE_SUPABASE_ANON_KEY || env.VITE_SUPABASE_PUBLIC_KEY;
+  if (!checkNonEmpty({ VITE_SUPABASE_ANON_KEY: resolvedAnonKey }, "VITE_SUPABASE_ANON_KEY")) {
+    addCheck(false, "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY", "missing");
+  } else if (isPlaceholder(resolvedAnonKey)) {
+    addCheck(false, "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY", "placeholder");
+  } else {
+    const keySource = env.VITE_SUPABASE_ANON_KEY ? "VITE_SUPABASE_ANON_KEY" : "VITE_SUPABASE_PUBLIC_KEY";
+    addCheck(true, "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY", `ok (using ${keySource})`);
   }
 
   let host = "";
@@ -90,9 +95,13 @@ async function run() {
         "- Copy Project URL from Supabase Dashboard -> Settings -> API and set VITE_SUPABASE_URL."
       );
     }
-    if (failed.some((x) => x.key === "VITE_SUPABASE_ANON_KEY")) {
+    if (
+      failed.some(
+        (x) => x.key === "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY"
+      )
+    ) {
       console.log(
-        "- Copy anon/public key from Supabase Dashboard -> Settings -> API and set VITE_SUPABASE_ANON_KEY."
+        "- Copy anon/public key from Supabase Dashboard -> Settings -> API and set VITE_SUPABASE_ANON_KEY or VITE_SUPABASE_PUBLIC_KEY."
       );
     }
     if (failed.some((x) => x.key === "VITE_COMPANY_NAME")) {
