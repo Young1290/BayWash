@@ -19,6 +19,17 @@ function checkNonEmpty(env, key) {
   return Boolean(env[key] && String(env[key]).trim());
 }
 
+function isPlaceholder(value) {
+  const v = String(value || "").trim().toUpperCase();
+  if (!v) return true;
+  return (
+    v.includes("YOUR_") ||
+    v.includes("XXXXX") ||
+    v.includes("EXAMPLE") ||
+    v === "+60XXXXXXXXX"
+  );
+}
+
 async function run() {
   const envPath = path.join(process.cwd(), ".env.local");
   if (!fs.existsSync(envPath)) {
@@ -36,6 +47,10 @@ async function run() {
   const missing = requiredKeys.filter((key) => !checkNonEmpty(env, key));
   if (missing.length > 0) {
     throw new Error(`Missing keys in .env.local: ${missing.join(", ")}`);
+  }
+  const placeholderKeys = requiredKeys.filter((key) => isPlaceholder(env[key]));
+  if (placeholderKeys.length > 0) {
+    throw new Error(`Placeholder values detected in .env.local: ${placeholderKeys.join(", ")}`);
   }
 
   let host = "";

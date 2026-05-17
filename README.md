@@ -131,5 +131,7 @@ Trust module text includes placeholders to replace for production:
 - `npm run check:env` reports `Supabase host cannot be resolved`:
   - verify project URL from Supabase dashboard (`Settings -> API -> Project URL`)
   - update `VITE_SUPABASE_URL` in `.env.local` and deploy platform env
+- `npm run check:env` reports `Placeholder values detected`:
+  - replace example values such as `+60XXXXXXXXX` with real production values
 - `npm run smoke:rpc` fails with `submit_booking_mvp_v2` missing:
   - run latest [supabase/schema.sql](supabase/schema.sql) in SQL editor
