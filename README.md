@@ -142,3 +142,4 @@ Trust module text includes placeholders to replace for production:
   - run latest [supabase/schema.sql](supabase/schema.sql) in SQL editor
 - `Legacy API keys are disabled`:
   - set `VITE_SUPABASE_PUBLIC_KEY` and avoid legacy anon key
+- If your DB still uses legacy slot constraint, `smoke:rpc` will auto-retry with legacy slot once.

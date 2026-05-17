@@ -87,3 +87,45 @@ test("submitBooking throws on empty rpc response", async () => {
     supabase.rpc = originalRpc;
   }
 });
+
+test("submitBooking retries with legacy slot when backend has old slot constraint", async () => {
+  const originalRpc = supabase.rpc;
+  const calls = [];
+  supabase.rpc = async (_fn, payload) => {
+    calls.push(payload.p_car_available_slot);
+    if (calls.length === 1) {
+      return {
+        data: null,
+        error: {
+          code: "23514",
+          message: 'violates check constraint "bookings_car_available_slot_check"',
+          details: 'Failing row contains (... night_1 ...)',
+        },
+      };
+    }
+    return {
+      data: [
+        {
+          user_id: "u2",
+          user_referral_code: "ZXCV1234",
+          booking_id: "b2",
+          address: "Bangsar",
+          carpark_location: "B2 / 47",
+          plan_type: "single",
+          car_available_date: "2026-05-19",
+          car_available_slot: "morning",
+          referrer_code: null,
+          booking_created_at: "2026-05-17T01:23:45.000Z",
+        },
+      ],
+      error: null,
+    };
+  };
+  try {
+    const result = await submitBooking({ ...samplePayload, carAvailableSlot: "night_1" });
+    assert.deepEqual(calls, ["night_1", "morning"]);
+    assert.equal(result.booking.car_available_slot, "morning");
+  } finally {
+    supabase.rpc = originalRpc;
+  }
+});

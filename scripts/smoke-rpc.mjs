@@ -57,7 +57,17 @@ async function run() {
     p_referrer_user_id: null,
   };
 
-  const { data, error } = await supabase.rpc("submit_booking_mvp_v2", payload);
+  let { data, error } = await supabase.rpc("submit_booking_mvp_v2", payload);
+  const message = [error?.code, error?.message, error?.details].filter(Boolean).join(" ").toLowerCase();
+  if (error && message.includes("23514") && message.includes("bookings_car_available_slot_check")) {
+    // Backward compatibility: some deployed DBs still enforce legacy slot enum.
+    const retry = await supabase.rpc("submit_booking_mvp_v2", {
+      ...payload,
+      p_car_available_slot: "morning",
+    });
+    data = retry.data;
+    error = retry.error;
+  }
   if (error) {
     throw new Error(`RPC failed: ${JSON.stringify(error)}`);
   }
