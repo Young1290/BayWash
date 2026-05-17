@@ -14,6 +14,9 @@ create table if not exists public.bookings (
   user_id uuid not null references public.users(id) on delete cascade,
   address text not null,
   carpark_location text not null,
+  car_plate text,
+  car_photo_url text,
+  plate_photo_url text,
   plan_type text not null check (plan_type in ('single', 'monthly')),
   car_available_date date not null check (car_available_date >= current_date),
   car_available_slot text not null check (car_available_slot in ('night_1', 'night_2', 'night_3', 'night_4')),
@@ -50,10 +53,31 @@ alter table public.users
   check (phone_e164 ~ '^\+60(1\d{7,8})$');
 
 alter table public.bookings
+  add column if not exists car_plate text;
+
+alter table public.bookings
+  add column if not exists car_photo_url text;
+
+alter table public.bookings
+  add column if not exists plate_photo_url text;
+
+alter table public.bookings
   drop constraint if exists bookings_referrer_code_format_check;
 alter table public.bookings
   add constraint bookings_referrer_code_format_check
   check (referrer_code is null or referrer_code ~ '^[A-Z0-9]{6,12}$');
+
+alter table public.bookings
+  drop constraint if exists bookings_car_plate_format_check;
+alter table public.bookings
+  add constraint bookings_car_plate_format_check
+  check (
+    car_plate is null
+    or (
+      length(trim(car_plate)) between 3 and 16
+      and upper(trim(car_plate)) ~ '^[A-Z0-9 -]+$'
+    )
+  );
 
 alter table public.bookings
   drop constraint if exists bookings_car_available_date_check;
@@ -77,6 +101,10 @@ alter table public.users enable row level security;
 alter table public.bookings enable row level security;
 alter table public.referrals enable row level security;
 
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('booking-media', 'booking-media', true, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do nothing;
+
 -- No direct anonymous table write policies.
 -- Anonymous intake should only happen through the RPC function.
 drop policy if exists "anon_users_insert" on public.users;
@@ -87,6 +115,9 @@ drop policy if exists "anon_users_update" on public.users;
 drop policy if exists "anon_bookings_select" on public.bookings;
 drop policy if exists "anon_referrals_select" on public.referrals;
 drop policy if exists "anon_referrals_insert" on public.referrals;
+drop policy if exists "booking_media_public_read" on storage.objects;
+drop policy if exists "booking_media_anon_insert" on storage.objects;
+drop policy if exists "booking_media_auth_insert" on storage.objects;
 
 do $$
 declare
@@ -102,6 +133,24 @@ begin
   end loop;
 end;
 $$;
+
+create policy "booking_media_public_read"
+  on storage.objects
+  for select
+  to public
+  using (bucket_id = 'booking-media');
+
+create policy "booking_media_anon_insert"
+  on storage.objects
+  for insert
+  to anon
+  with check (bucket_id = 'booking-media');
+
+create policy "booking_media_auth_insert"
+  on storage.objects
+  for insert
+  to authenticated
+  with check (bucket_id = 'booking-media');
 
 create or replace function public.generate_referral_code(code_length integer default 8)
 returns text
@@ -138,6 +187,9 @@ create or replace function public.submit_booking_mvp_v2(
   p_plan_type text,
   p_car_available_date date,
   p_car_available_slot text,
+  p_car_plate text default null,
+  p_car_photo_url text default null,
+  p_plate_photo_url text default null,
   p_referrer_code text default null,
   p_referrer_user_id uuid default null
 )
@@ -147,6 +199,9 @@ returns table (
   booking_id uuid,
   address text,
   carpark_location text,
+  car_plate text,
+  car_photo_url text,
+  plate_photo_url text,
   plan_type text,
   car_available_date date,
   car_available_slot text,
@@ -197,6 +252,9 @@ begin
     user_id,
     address,
     carpark_location,
+    car_plate,
+    car_photo_url,
+    plate_photo_url,
     plan_type,
     car_available_date,
     car_available_slot,
@@ -206,6 +264,9 @@ begin
     v_user_id,
     trim(p_address),
     trim(p_carpark_location),
+    nullif(upper(trim(coalesce(p_car_plate, ''))), ''),
+    nullif(trim(coalesce(p_car_photo_url, '')), ''),
+    nullif(trim(coalesce(p_plate_photo_url, '')), ''),
     p_plan_type,
     p_car_available_date,
     p_car_available_slot,
@@ -257,6 +318,9 @@ begin
     v_booking.id,
     v_booking.address,
     v_booking.carpark_location,
+    v_booking.car_plate,
+    v_booking.car_photo_url,
+    v_booking.plate_photo_url,
     v_booking.plan_type,
     v_booking.car_available_date,
     v_booking.car_available_slot,
@@ -275,6 +339,9 @@ revoke all on function public.submit_booking_mvp_v2(
   date,
   text,
   text,
+  text,
+  text,
+  text,
   uuid
 ) from public;
 grant execute on function public.submit_booking_mvp_v2(
@@ -284,6 +351,9 @@ grant execute on function public.submit_booking_mvp_v2(
   text,
   text,
   date,
+  text,
+  text,
+  text,
   text,
   text,
   uuid

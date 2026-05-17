@@ -50,19 +50,40 @@ async function run() {
     p_phone_e164: phone,
     p_address: "Bangsar",
     p_carpark_location: "B2 / 47",
+    p_car_plate: "BQC 8899",
+    p_car_photo_url: "https://example.com/car.jpg",
+    p_plate_photo_url: "https://example.com/plate.jpg",
     p_plan_type: "single",
     p_car_available_date: nextWeekdayIso(),
     p_car_available_slot: "night_1",
     p_referrer_code: null,
     p_referrer_user_id: null,
   };
+  const legacyPayload = {
+    p_name: payload.p_name,
+    p_phone_e164: payload.p_phone_e164,
+    p_address: payload.p_address,
+    p_carpark_location: payload.p_carpark_location,
+    p_plan_type: payload.p_plan_type,
+    p_car_available_date: payload.p_car_available_date,
+    p_car_available_slot: payload.p_car_available_slot,
+    p_referrer_code: payload.p_referrer_code,
+    p_referrer_user_id: payload.p_referrer_user_id,
+  };
 
   let { data, error } = await supabase.rpc("submit_booking_mvp_v2", payload);
-  const message = [error?.code, error?.message, error?.details].filter(Boolean).join(" ").toLowerCase();
+  let message = [error?.code, error?.message, error?.details].filter(Boolean).join(" ").toLowerCase();
+  const usedLegacySignature = message.includes("pgrst202") && message.includes("submit_booking_mvp_v2");
+  if (error && usedLegacySignature) {
+    const retryLegacy = await supabase.rpc("submit_booking_mvp_v2", legacyPayload);
+    data = retryLegacy.data;
+    error = retryLegacy.error;
+    message = [error?.code, error?.message, error?.details].filter(Boolean).join(" ").toLowerCase();
+  }
   if (error && message.includes("23514") && message.includes("bookings_car_available_slot_check")) {
     // Backward compatibility: some deployed DBs still enforce legacy slot enum.
     const retry = await supabase.rpc("submit_booking_mvp_v2", {
-      ...payload,
+      ...(usedLegacySignature ? legacyPayload : payload),
       p_car_available_slot: "morning",
     });
     data = retry.data;
@@ -103,6 +124,10 @@ run().catch((error) => {
   } else if (message.includes("Legacy API keys are disabled")) {
     console.error(
       `${message}\nHint: Use VITE_SUPABASE_PUBLIC_KEY instead of legacy anon key.`
+    );
+  } else if (message.includes("pgrst202") || message.includes("could not find the function")) {
+    console.error(
+      `${message}\nHint: Backend function signature is outdated. Run latest supabase/schema.sql in Supabase SQL editor.`
     );
   } else {
     console.error(message);

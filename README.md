@@ -50,6 +50,7 @@ Single-page doorstep car wash booking app with:
    - `users`
    - `bookings`
    - `referrals`
+   - storage bucket: `booking-media` (auto-created by schema SQL)
 4. Confirm SQL function exists:
    - `submit_booking_mvp_v2(...)`
 
@@ -83,6 +84,9 @@ Frontend submission shape:
   "phone": "+60123456789",
   "address": "string",
   "carparkLocation": "string",
+  "carPlate": "string | null",
+  "carPhotoFile": "File | null",
+  "platePhotoFile": "File | null",
   "planType": "single | monthly",
   "carAvailableDate": "YYYY-MM-DD",
   "carAvailableSlot": "night_1 | night_2 | night_3 | night_4",
@@ -90,6 +94,10 @@ Frontend submission shape:
   "referrerUserId": "uuid | null"
 }
 ```
+
+Notes:
+- App uploads optional media to Supabase Storage bucket `booking-media` and sends resulting URLs via RPC when backend signature supports it.
+- If backend is still on old RPC signature, app auto-falls back to legacy call so booking is not blocked.
 
 Phone normalization accepts only explicit Malaysia prefixes:
 - `0...`
