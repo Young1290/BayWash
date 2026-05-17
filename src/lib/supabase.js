@@ -5,8 +5,10 @@ const supabaseAnonKey = import.meta.env?.VITE_SUPABASE_ANON_KEY;
 export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  // Keep this explicit so setup errors are obvious in local/dev.
-  console.warn("Supabase env vars are missing. Check .env values.");
+  // Keep this explicit so setup errors are obvious in browser local/dev.
+  if (typeof window !== "undefined") {
+    console.warn("Supabase env vars are missing. Check .env values.");
+  }
 }
 
 export const supabase =

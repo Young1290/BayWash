@@ -68,6 +68,7 @@ export default function App() {
   const [savedReferrerUserId, setSavedReferrerUserId] = useState(null);
 
   const text = useMemo(() => messages[lang], [lang]);
+  const configError = !isSupabaseConfigured ? tError("missingClientConfig") : "";
 
   useEffect(() => {
     const refFromUrl = readReferrerFromUrl();
@@ -441,7 +442,7 @@ export default function App() {
             </section>
 
             {submitError && <p className="submit-error">{submitError}</p>}
-            {!isSupabaseConfigured && <p className="submit-error">{tError("missingClientConfig")}</p>}
+            {!submitError && configError && <p className="submit-error">{configError}</p>}
             {actionFeedback && <p className="submit-error">{actionFeedback}</p>}
             <button className="submit-btn" type="submit" disabled={submitting || !isSupabaseConfigured}>
               {submitting ? t("submitting") : t("submit")}
