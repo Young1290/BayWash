@@ -55,6 +55,7 @@ function withVars(template, vars) {
 }
 
 const LANG_STORAGE_KEY = "washnear_lang";
+const DESIGNER_STORAGE_KEY = "washnear_designer_preset";
 const initialLoginForm = {
   name: "",
   phone: "",
@@ -71,6 +72,14 @@ function getInitialLang() {
 
 export default function App() {
   const [lang, setLang] = useState(getInitialLang);
+  const [designerPreset, setDesignerPreset] = useState(() => {
+    try {
+      const stored = window.localStorage.getItem(DESIGNER_STORAGE_KEY);
+      return stored === "focus" || stored === "contrast" ? stored : "focus";
+    } catch (error) {
+      return "focus";
+    }
+  });
   const [step, setStep] = useState("login");
   const [profile, setProfile] = useState(null);
   const [loginForm, setLoginForm] = useState(initialLoginForm);
@@ -119,6 +128,14 @@ export default function App() {
       console.warn("Could not persist language preference.", error);
     }
   }, [lang]);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(DESIGNER_STORAGE_KEY, designerPreset);
+    } catch (error) {
+      console.warn("Could not persist designer preset.", error);
+    }
+  }, [designerPreset]);
 
   useEffect(() => {
     return () => {
@@ -345,7 +362,7 @@ export default function App() {
   const selectedPlanLabel = form.planType === "monthly" ? t("planMonthly") : t("planSingle");
 
   return (
-    <main className="page-shell">
+    <main className={`page-shell designer-${designerPreset}`}>
       <section className="card">
         <header className="hero">
           <div className="brand-row">
@@ -383,6 +400,23 @@ export default function App() {
             <span className={step === "booking" ? "step-pill active" : "step-pill"}>
               2. {tx("stepBooking", "Booking")}
             </span>
+          </div>
+
+          <div className="designer-switch" role="group" aria-label={tx("designerSwitch", "Design style")}>
+            <button
+              type="button"
+              className={designerPreset === "focus" ? "designer-btn active" : "designer-btn"}
+              onClick={() => setDesignerPreset("focus")}
+            >
+              {tx("designerFocus", "Designer A: Focus")}
+            </button>
+            <button
+              type="button"
+              className={designerPreset === "contrast" ? "designer-btn active" : "designer-btn"}
+              onClick={() => setDesignerPreset("contrast")}
+            >
+              {tx("designerContrast", "Designer B: Contrast")}
+            </button>
           </div>
 
           {savedReferrerCode && (
