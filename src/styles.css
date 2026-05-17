@@ -61,6 +61,14 @@ body {
   display: grid;
   place-items: center;
   padding: 24px 14px;
+  background-image:
+    linear-gradient(to bottom, color-mix(in srgb, var(--primary) 7%, transparent), transparent 28%),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 30px,
+      color-mix(in srgb, var(--line) 34%, transparent) 31px
+    );
 }
 
 .card {
@@ -129,6 +137,53 @@ body {
   background: var(--primary);
   border-color: var(--primary);
   color: #fff;
+}
+
+.designer-identity {
+  margin-top: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px;
+  display: grid;
+  gap: 6px;
+}
+
+.designer-identity-title {
+  margin: 0;
+  color: var(--primary);
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.designer-identity-lead {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.designer-identity-note {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.designer-identity-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.designer-identity-tag {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 8%, #ffffff);
+  color: var(--primary-ink);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 8px;
 }
 
 .highlight-grid {
@@ -703,6 +758,16 @@ input:focus-visible {
   border-color: #bdd0ff;
   background: #edf3ff;
   color: #1e4bb2;
+}
+
+.designer-contrast .designer-identity {
+  background: #f8fbff;
+}
+
+.designer-contrast .designer-identity-tag {
+  background: #eef3ff;
+  border-color: #d3def6;
+  color: #1a43a5;
 }
 
 @media (max-width: 640px) {

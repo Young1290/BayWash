@@ -422,6 +422,29 @@ export default function App() {
   })();
   const selectedDateLabel = form.carAvailableDate || tx("quickSummaryNotSelected", "-");
   const selectedPlanLabel = form.planType === "monthly" ? t("planMonthly") : t("planSingle");
+  const designerProfiles = {
+    focus: {
+      title: tx("designerFocus", "Designer A: Focus"),
+      lead: tx("designerFocusLead", "Calm Utility System"),
+      note: tx("designerFocusNote", "Comfort-first spacing, soft hierarchy, effortless scan flow."),
+      tags: [
+        tx("designerTagClarity", "Clarity"),
+        tx("designerTagTrust", "Trust"),
+        tx("designerTagBreathable", "Breathable"),
+      ],
+    },
+    contrast: {
+      title: tx("designerContrast", "Designer B: Contrast"),
+      lead: tx("designerContrastLead", "Visual Energy System"),
+      note: tx("designerContrastNote", "High-contrast emphasis, bolder information anchors, faster visual decisions."),
+      tags: [
+        tx("designerTagImpact", "Impact"),
+        tx("designerTagReadable", "Readable"),
+        tx("designerTagMemorable", "Memorable"),
+      ],
+    },
+  };
+  const activeDesigner = designerProfiles[designerPreset];
   const highlights = [
     { icon: "clock", text: t("trustHours") },
     { icon: "shield", text: t("trustPrivacy") },
@@ -498,6 +521,17 @@ export default function App() {
               {tx("designerContrast", "Designer B: Contrast")}
             </button>
           </div>
+
+          <section className="designer-identity" aria-label={tx("designerIdentity", "Active design direction")}>
+            <p className="designer-identity-title">{activeDesigner.title}</p>
+            <p className="designer-identity-lead">{activeDesigner.lead}</p>
+            <p className="designer-identity-note">{activeDesigner.note}</p>
+            <div className="designer-identity-tags">
+              {activeDesigner.tags.map((tag) => (
+                <span key={tag} className="designer-identity-tag">{tag}</span>
+              ))}
+            </div>
+          </section>
 
           {savedReferrerCode && (
             <p className="ref-chip">
