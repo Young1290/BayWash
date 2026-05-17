@@ -37,7 +37,7 @@ async function run() {
   }
 
   const env = readEnv(envPath);
-  const requiredKeys = ["VITE_SUPABASE_URL", "VITE_COMPANY_NAME", "VITE_SUPPORT_WHATSAPP"];
+  const requiredKeys = ["VITE_COMPANY_NAME", "VITE_SUPPORT_WHATSAPP"];
 
   const checks = [];
   const addCheck = (ok, key, detail) => checks.push({ ok, key, detail });
@@ -62,23 +62,33 @@ async function run() {
     addCheck(true, "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY", `ok (using ${keySource})`);
   }
 
-  let host = "";
-  try {
-    host = new URL(env.VITE_SUPABASE_URL).host;
-  } catch {
-    addCheck(false, "VITE_SUPABASE_URL", "invalid URL format");
-    host = "";
-  }
-
-  if (host) {
+  if (!checkNonEmpty(env, "VITE_SUPABASE_URL")) {
+    addCheck(false, "VITE_SUPABASE_URL", "missing");
+  } else if (isPlaceholder(env.VITE_SUPABASE_URL)) {
+    addCheck(false, "VITE_SUPABASE_URL", "placeholder");
+  } else {
+    let host = "";
     try {
-      const addresses = await dns.lookup(host, { all: true });
-      if (!addresses || addresses.length === 0) {
-        throw new Error("resolved empty DNS result");
+      host = new URL(env.VITE_SUPABASE_URL).host;
+    } catch {
+      addCheck(false, "VITE_SUPABASE_URL", "invalid URL format");
+      host = "";
+    }
+
+    if (host) {
+      try {
+        const addresses = await dns.lookup(host, { all: true });
+        if (!addresses || addresses.length === 0) {
+          throw new Error("resolved empty DNS result");
+        }
+        addCheck(true, "VITE_SUPABASE_URL", `dns ok (${host})`);
+      } catch (error) {
+        addCheck(
+          false,
+          "VITE_SUPABASE_URL",
+          `dns failed (${host}) (${error.code || error.message})`
+        );
       }
-      addCheck(true, "VITE_SUPABASE_URL", `dns ok (${host})`);
-    } catch (error) {
-      addCheck(false, "VITE_SUPABASE_URL", `dns failed (${host}) (${error.code || error.message})`);
     }
   }
 
