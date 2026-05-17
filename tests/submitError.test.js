@@ -5,6 +5,7 @@ import { buildSubmitErrorMessage } from "../src/lib/submitError.js";
 const dict = {
   serviceUnavailable: "serviceUnavailable",
   missingBackendFunction: "missingBackendFunction",
+  backendSchemaMismatch: "backendSchemaMismatch",
   missingClientConfig: "missingClientConfig",
   authConfig: "authConfig",
   submitFailed: "submitFailed",
@@ -23,6 +24,14 @@ test("maps missing RPC function errors", () => {
     tError
   );
   assert.equal(message, "missingBackendFunction");
+});
+
+test("maps check constraint schema mismatch errors", () => {
+  const message = buildSubmitErrorMessage(
+    { code: "23514", message: 'violates check constraint "bookings_car_available_slot_check"' },
+    tError
+  );
+  assert.equal(message, "backendSchemaMismatch");
 });
 
 test("maps client config errors", () => {

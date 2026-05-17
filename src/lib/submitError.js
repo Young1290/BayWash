@@ -15,6 +15,13 @@ export function buildSubmitErrorMessage(error, tError) {
     return tError("missingBackendFunction");
   }
   if (
+    normalized.includes("23514") ||
+    normalized.includes("bookings_car_available_slot_check") ||
+    normalized.includes("violates check constraint")
+  ) {
+    return tError("backendSchemaMismatch");
+  }
+  if (
     normalized.includes("supabase client is not configured") ||
     normalized.includes("not configured")
   ) {

@@ -34,10 +34,13 @@ async function run() {
     throw new Error("Missing .env.local");
   }
   const env = readEnv(envPath);
-  const url = env.VITE_SUPABASE_URL;
-  const anon = env.VITE_SUPABASE_ANON_KEY;
+  const projectId = env.VITE_SUPABASE_PROJECT_ID || env.VITE_SUPABASE_project_id;
+  const url = env.VITE_SUPABASE_URL || (projectId ? `https://${projectId}.supabase.co` : "");
+  const anon = env.VITE_SUPABASE_PUBLIC_KEY || env.VITE_SUPABASE_ANON_KEY;
   if (!url || !anon) {
-    throw new Error("Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY in .env.local");
+    throw new Error(
+      "Missing VITE_SUPABASE_URL (or VITE_SUPABASE_PROJECT_ID) or VITE_SUPABASE_PUBLIC_KEY/VITE_SUPABASE_ANON_KEY in .env.local"
+    );
   }
 
   const supabase = createClient(url, anon);
@@ -78,6 +81,21 @@ async function run() {
 }
 
 run().catch((error) => {
-  console.error(error.message);
+  const message = String(error?.message || "");
+  if (
+    message.includes("23514") ||
+    message.includes("bookings_car_available_slot_check") ||
+    message.includes("violates check constraint")
+  ) {
+    console.error(
+      `${message}\nHint: Run latest supabase/schema.sql in your Supabase SQL editor to align slot/date constraints.`
+    );
+  } else if (message.includes("Legacy API keys are disabled")) {
+    console.error(
+      `${message}\nHint: Use VITE_SUPABASE_PUBLIC_KEY instead of legacy anon key.`
+    );
+  } else {
+    console.error(message);
+  }
   process.exitCode = 1;
 });

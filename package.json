@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "node --test",
     "audit:release": "node scripts/audit-release.mjs",
+    "audit:release:all": "node scripts/audit-release.mjs --continue-on-fail",
     "check:env": "node scripts/check-env.mjs",
     "smoke:rpc": "node scripts/smoke-rpc.mjs"
   },

@@ -79,6 +79,8 @@ export const messages = {
       serviceUnavailable: "Cannot reach booking service now. Please check your network or Supabase URL.",
       missingBackendFunction:
         "Booking function is missing. Please run the latest schema.sql in Supabase.",
+      backendSchemaMismatch:
+        "Booking schema is outdated. Please run the latest schema.sql in Supabase.",
       missingClientConfig:
         "Booking service is not configured yet. Please set Supabase URL and anon key first.",
       authConfig: "Supabase key/permission issue. Please verify project keys and RLS setup.",
@@ -155,6 +157,7 @@ export const messages = {
       submitFailed: "提交失败，请稍后重试。",
       serviceUnavailable: "当前无法连接预约服务，请检查网络或 Supabase URL。",
       missingBackendFunction: "数据库预约函数缺失，请在 Supabase 执行最新 schema.sql。",
+      backendSchemaMismatch: "数据库预约结构版本过旧，请在 Supabase 执行最新 schema.sql。",
       missingClientConfig: "预约服务尚未配置，请先设置 Supabase URL 与 anon key。",
       authConfig: "Supabase key 或权限配置异常，请检查项目 key 与 RLS。",
       invalidDate: "请选择今天或未来日期。",
@@ -236,6 +239,8 @@ export const messages = {
         "Tidak dapat capai servis tempahan sekarang. Sila semak rangkaian atau URL Supabase.",
       missingBackendFunction:
         "Fungsi tempahan belum wujud. Sila jalankan schema.sql terkini di Supabase.",
+      backendSchemaMismatch:
+        "Skema tempahan ketinggalan versi. Sila jalankan schema.sql terkini di Supabase.",
       missingClientConfig:
         "Servis tempahan belum dikonfigurasi. Sila tetapkan URL Supabase dan anon key dahulu.",
       authConfig: "Isu key/kebenaran Supabase. Sila semak key projek dan tetapan RLS.",

@@ -6,6 +6,7 @@ const gates = [
   { name: "Env validation", args: ["run", "check:env"] },
   { name: "RPC smoke test", args: ["run", "smoke:rpc"] },
 ];
+const shouldContinueOnFail = process.argv.includes("--continue-on-fail");
 
 function runGate(gate) {
   const npmCli = process.env.npm_execpath;
@@ -29,7 +30,14 @@ function printSummary(results) {
   }
 }
 
-const results = gates.map(runGate);
+const results = [];
+for (const gate of gates) {
+  const result = runGate(gate);
+  results.push(result);
+  if (!result.ok && !shouldContinueOnFail) {
+    break;
+  }
+}
 printSummary(results);
 
 const failed = results.some((item) => !item.ok);

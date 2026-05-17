@@ -52,24 +52,35 @@ async function run() {
     }
   }
 
-  const resolvedAnonKey = env.VITE_SUPABASE_ANON_KEY || env.VITE_SUPABASE_PUBLIC_KEY;
+  const resolvedAnonKey = env.VITE_SUPABASE_PUBLIC_KEY || env.VITE_SUPABASE_ANON_KEY;
   if (!checkNonEmpty({ VITE_SUPABASE_ANON_KEY: resolvedAnonKey }, "VITE_SUPABASE_ANON_KEY")) {
     addCheck(false, "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY", "missing");
   } else if (isPlaceholder(resolvedAnonKey)) {
     addCheck(false, "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY", "placeholder");
   } else {
-    const keySource = env.VITE_SUPABASE_ANON_KEY ? "VITE_SUPABASE_ANON_KEY" : "VITE_SUPABASE_PUBLIC_KEY";
+    const keySource = env.VITE_SUPABASE_PUBLIC_KEY
+      ? "VITE_SUPABASE_PUBLIC_KEY"
+      : "VITE_SUPABASE_ANON_KEY";
     addCheck(true, "VITE_SUPABASE_ANON_KEY | VITE_SUPABASE_PUBLIC_KEY", `ok (using ${keySource})`);
   }
 
-  if (!checkNonEmpty(env, "VITE_SUPABASE_URL")) {
-    addCheck(false, "VITE_SUPABASE_URL", "missing");
-  } else if (isPlaceholder(env.VITE_SUPABASE_URL)) {
+  const projectId = env.VITE_SUPABASE_PROJECT_ID || env.VITE_SUPABASE_project_id;
+  const resolvedSupabaseUrl =
+    env.VITE_SUPABASE_URL || (projectId ? `https://${projectId}.supabase.co` : "");
+  const supabaseUrlSource = env.VITE_SUPABASE_URL
+    ? "VITE_SUPABASE_URL"
+    : projectId
+      ? "VITE_SUPABASE_PROJECT_ID"
+      : "";
+
+  if (!resolvedSupabaseUrl) {
+    addCheck(false, "VITE_SUPABASE_URL | VITE_SUPABASE_PROJECT_ID", "missing");
+  } else if (isPlaceholder(resolvedSupabaseUrl)) {
     addCheck(false, "VITE_SUPABASE_URL", "placeholder");
   } else {
     let host = "";
     try {
-      host = new URL(env.VITE_SUPABASE_URL).host;
+      host = new URL(resolvedSupabaseUrl).host;
     } catch {
       addCheck(false, "VITE_SUPABASE_URL", "invalid URL format");
       host = "";
@@ -81,12 +92,12 @@ async function run() {
         if (!addresses || addresses.length === 0) {
           throw new Error("resolved empty DNS result");
         }
-        addCheck(true, "VITE_SUPABASE_URL", `dns ok (${host})`);
+        addCheck(true, "VITE_SUPABASE_URL", `dns ok (${host}) (from ${supabaseUrlSource})`);
       } catch (error) {
         addCheck(
           false,
           "VITE_SUPABASE_URL",
-          `dns failed (${host}) (${error.code || error.message})`
+          `dns failed (${host}) (${error.code || error.message}) (from ${supabaseUrlSource})`
         );
       }
     }
@@ -100,9 +111,15 @@ async function run() {
   const failed = checks.filter((item) => !item.ok);
   if (failed.length > 0) {
     console.log("\nSuggested fixes:");
-    if (failed.some((x) => x.key === "VITE_SUPABASE_URL")) {
+    if (
+      failed.some(
+        (x) =>
+          x.key === "VITE_SUPABASE_URL" ||
+          x.key === "VITE_SUPABASE_URL | VITE_SUPABASE_PROJECT_ID"
+      )
+    ) {
       console.log(
-        "- Copy Project URL from Supabase Dashboard -> Settings -> API and set VITE_SUPABASE_URL."
+        "- Copy Project URL from Supabase Dashboard -> Settings -> API and set VITE_SUPABASE_URL, or set VITE_SUPABASE_PROJECT_ID."
       );
     }
     if (

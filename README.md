@@ -13,8 +13,8 @@ Single-page doorstep car wash booking app with:
    npm install
    ```
 2. Create `.env` from `.env.example` and fill:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLIC_KEY`)
+   - `VITE_SUPABASE_URL` (or `VITE_SUPABASE_PROJECT_ID`)
+   - `VITE_SUPABASE_PUBLIC_KEY` (preferred) or `VITE_SUPABASE_ANON_KEY`
 3. Run app:
    ```bash
    npm run dev
@@ -36,6 +36,11 @@ Single-page doorstep car wash booking app with:
    ```bash
    npm run audit:release
    ```
+   - default behavior is fail-fast (stops at first failed gate)
+   - to run all gates even after failures:
+     ```bash
+     npm run audit:release:all
+     ```
 
 ## Supabase setup
 
@@ -103,8 +108,8 @@ Trust module text includes placeholders to replace for production:
 ## Go-live checklist
 
 1. Set production env vars in deploy platform:
-   - `VITE_SUPABASE_URL`
-   - `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLIC_KEY`)
+   - `VITE_SUPABASE_URL` (or `VITE_SUPABASE_PROJECT_ID`)
+   - `VITE_SUPABASE_PUBLIC_KEY` (preferred) or `VITE_SUPABASE_ANON_KEY`
    - `VITE_COMPANY_NAME`
    - `VITE_SUPPORT_WHATSAPP`
 2. Run latest [supabase/schema.sql](supabase/schema.sql) on production Supabase.
@@ -135,3 +140,5 @@ Trust module text includes placeholders to replace for production:
   - replace example values such as `+60XXXXXXXXX` with real production values
 - `npm run smoke:rpc` fails with `submit_booking_mvp_v2` missing:
   - run latest [supabase/schema.sql](supabase/schema.sql) in SQL editor
+- `Legacy API keys are disabled`:
+  - set `VITE_SUPABASE_PUBLIC_KEY` and avoid legacy anon key
